@@ -20,13 +20,22 @@ class DepartmentSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%d/%m/%Y %H:%M:%S', read_only=True)
     class Meta:
         model = Department
-        fields = ('id', 'title', 'category', 'author', 'created_at', 'description')
-    #
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation['images'] = DepartmentImageSerializer(instance.images.all(), many=True).data
-    #
-    #     return representation
+        fields = ('id', 'title', 'category', 'created_at', 'description')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['author'] = instance.author.email
+        representation['category'] = CategorySerializer(instance.category).data
+        representation['images'] = DepartmentImageSerializer(instance.images.all(), many=True).data
+
+        return representation
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user_id = request.user.id
+        validated_data['author_id'] = user_id
+        department = Department.objects.create(**validated_data)
+        return department
 
 
 class DepartmentImageSerializer(serializers.ModelSerializer):
@@ -87,7 +96,6 @@ class ProblemSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         represintation = super().to_representation(instance)
         represintation['images'] = CodeImageSerializer(instance.images.all(), many=True).data
-        # represintation[] = ReplySerializer(instance.replies.all, many=True).data
         represintation['replies'] = instance.replies.count()
         return represintation
 

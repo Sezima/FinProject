@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'main',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -132,7 +133,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'account.MyUser'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 3
+}
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,65 +1,83 @@
+from datetime import timedelta
+
 from django.db.models import Q
 from django.shortcuts import render
-from rest_framework import generics
+from django.utils import timezone
+from rest_framework import generics, viewsets, status
 from rest_framework.decorators import api_view, action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .models import *
 from .serializers import CategorySerializer, ReplySerializer, CommentSerializer, ProblemSerializer, DepartmentSerializer
+from .permissions import IsDepartmentAuthor
 
 
-# @api_view(['GET'])
-# def categories(request):
-#     categories = Category.objects.all()
-#     serializer = CategorySerializer(categories, many=True)
-#     return Response(serializer.data)
-#
 
-# class DepartmentListView(APIView):
-#     def get(self, request):
-#         departments = Department.objects.all()
-#         serializer = DepartmentSerializer(departments, many=True)
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#         post = request.data
-#         serializer = DepartmentSerializer(data=post)
-#         if serializer.is_valid(raise_exception=True):
-#             post_saved = serializer.save()
-#         return Response(serializer.data)
+class PaginationClass(PageNumberPagination):
+    page_size = 5
+    def get_paginated_response(self, data):
+        for i in range(self.page_size):
+            text = data[i]['description']
+            data[i]['description'] = text[:55] + '...'
+        return super().get_paginated_response(data)
+
+
 
 class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [AllowAny, ]
 
 
-class DepartmentListView(generics.ListAPIView):
+class DepartmentsViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+    permission_classes = [IsAuthenticated, ]
+    pagination_class = PaginationClass
 
-
-class DepartmentDetailView(generics.RetrieveAPIView):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-
-class DepartmentUpdateView(generics.UpdateAPIView):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-
-
-class DepartmentDeleteView(generics.DestroyAPIView):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-
-
-class DepartmentImageView(generics.ListAPIView):
+class DepartmentImageView(generics.ListCreateAPIView):
     queryset = DepartmentImage.objects.all()
     serializer_class = DepartmentSerializer
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permissions = [IsDepartmentAuthor, ]
+        else:
+            permissions = []
+        return [permission() for permission in permissions]
+
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        weeks = int(self.request.query_params.get('days', 0))
+        if weeks > 0:
+            start_date = timezone.now() - timedelta(days=weeks)
+            queryset = queryset.filter(created_at__gte=start_date)
+            return queryset
+
+    @action(detail=False, methods=['get'])
+    def own(self, request, pk=None):
+        queryset = self.get_queryset()
+        queryset = queryset.filter(author=request.user)
+        serializer = DepartmentSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def search(self, request, pk=None):
+        q = request.query_params.get('q')
+        queryset = self.get_queryset()
+        queryset = queryset.filter(Q(title__icontains=q) | Q(description__icontains=q))
+        serializer = DepartmentSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 
