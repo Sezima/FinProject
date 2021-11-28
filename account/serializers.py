@@ -29,7 +29,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def save(self, commit=True):
         user = MyUser.objects.create_user(**self.validated_data)
-        send_welcome_email(user.email)
+        send_welcome_email(user.email, user.activation_code)
         return user
 
 

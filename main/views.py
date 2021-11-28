@@ -1,29 +1,30 @@
 from datetime import timedelta
 
 from django.db.models import Q
-from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import generics, viewsets, status
 from rest_framework.decorators import api_view, action
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from .models import *
-from .serializers import CategorySerializer, ReplySerializer, CommentSerializer, ProblemSerializer, DepartmentSerializer
+from .serializers import CategorySerializer, ReplySerializer, CommentSerializer, ProblemSerializer, \
+    DepartmentSerializer, UserHistorySerializer
 from .permissions import IsDepartmentAuthor
 
 
 
 class PaginationClass(PageNumberPagination):
     page_size = 5
-    def get_paginated_response(self, data):
-        for i in range(self.page_size):
-            text = data[i]['description']
-            data[i]['description'] = text[:55] + '...'
-        return super().get_paginated_response(data)
+    # def get_paginated_response(self, data):
+    #     for i in range(self.page_size):
+    #         text = data[i]['description']
+    #         data[i]['description'] = text[:55] + '...'
+    #     return super().get_paginated_response(data)
 
 
 
@@ -108,3 +109,16 @@ class ReplyViewSet(ModelViewSet):
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+
+
+class UserHistoryView(UpdateModelMixin, GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = UserHistory.objects.all()
+    serializer_class = UserHistorySerializer
+    lookup_field = 'post'
+
+    # def get_object(self):
+    #     UserHistory.objects.get_or_create()
+    #     obj = UserHistory.objects.get_or_create(user=self.request.user, post_id=self.kwargs['post'])
+    #     return obj

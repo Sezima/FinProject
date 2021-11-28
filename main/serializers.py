@@ -130,3 +130,15 @@ class CommentSerializer(serializers.ModelSerializer):
         comment = Comment.objects.create(author=request.user, **validated_data)
 
         return comment
+
+
+class UserHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserHistory
+        fields = ('post', 'like', 'in_postmarks', 'rate')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['like'] = instance.like
+        representation['rate'] = instance.rate
+

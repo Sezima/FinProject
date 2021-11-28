@@ -32,7 +32,7 @@ class MyUser(AbstractUser):
     activation_code = models.CharField(max_length=50, blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     objects = MyUserManager()
     def __str__(self):

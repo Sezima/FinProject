@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import ModelAdmin
 
 from .models import *
 
@@ -14,3 +15,9 @@ class DepartmentAdmin(admin.ModelAdmin):
 admin.site.register(Category)
 admin.site.register(Problem)
 admin.site.register(Reply)
+admin.site.register(Comment)
+
+
+@admin.register(UserHistory)
+class UserHistoryAdmin(ModelAdmin):
+    ...

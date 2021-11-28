@@ -61,3 +61,22 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('-created', )
+
+class UserHistory(models.Model):
+    RATE_CHOICES = (
+        (1, 'Bad'),
+        (2, 'Not well'),
+        (3, 'Norm'),
+        (4, 'Good'),
+        (5, 'Amazing')
+    )
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey(Department, on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    in_postmarks = models.BooleanField(default=False)
+    rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES, null=True)
+
+
+    def __str__(self):
+        return f'{self.user.email}: {self.post.title}, RATE {self.rate}'
+

@@ -23,13 +23,14 @@ from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
 from main.views import CategoryListView, DepartmentImageView, DepartmentsViewSet, ReplyViewSet, ProblemViewSet, \
-    CommentViewSet
+    CommentViewSet, UserHistoryView
 
 router = DefaultRouter()
 router.register('department', DepartmentsViewSet)
 router.register('problems', ProblemViewSet)
 router.register('replies', ReplyViewSet)
 router.register('comments', CommentViewSet)
+router.register('posts', UserHistoryView)
 
 
 schema_view = get_schema_view(
@@ -54,6 +55,5 @@ urlpatterns = [
     path('api/v1/account/', include('account.urls')),
     path('api/v1/', include(router.urls)),
     path('', schema_view.with_ui()),
-
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
