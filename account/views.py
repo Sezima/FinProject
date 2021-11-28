@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 
+
 class RegisterView(APIView):
     def post(self, request):
         data = request.data

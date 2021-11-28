@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'first.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hotel_db',
+        'NAME': 'hospital_db',
         'USER': 'sezim',
         'PASSWORD': '1',
         'HOST': 'localhost',
@@ -143,3 +143,11 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 3
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'osmsezimka@gmail.com'
+EMAIL_HOST_PASSWORD = 'sezimvarmy'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

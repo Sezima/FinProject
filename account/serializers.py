@@ -1,9 +1,19 @@
 from django.contrib.auth import authenticate
+from django.core.mail import send_mail
 from rest_framework import serializers
 
 from .models import MyUser
 from .utils import send_activation_code
 
+def send_welcome_email(email):
+    message = f'Thanks for registration in our site Online Hospital!'
+    send_mail(
+        'Welcome to Online Hospital!',
+        message,
+        'admin@gmail.com',
+        [email],
+        fail_silently=False
+    )
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6, write_only=True)
@@ -24,6 +34,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.get('password')
         user = MyUser.objects.create_user(email=email, password=password)
         send_activation_code(email=user.email, activation_code=user.activation_code)
+        return user
+
+
+    def save(self, commit=True):
+        user = MyUser.objects.create_user(**self.validated_data)
+        send_welcome_email(user.email)
         return user
 
 
