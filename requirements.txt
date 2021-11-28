@@ -2,3 +2,7 @@ Django
 psycopg2-binary
 Pillow
 djangorestframework
+python-decouple
+twilio
+djangorestframework-simplejwt
+drf-yasg

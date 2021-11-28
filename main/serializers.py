@@ -66,7 +66,7 @@ class ProblemSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         represintation = super().to_representation(instance)
         represintation['images'] = CodeImageSerializer(instance.comments.all(), many=True).data
-        cation = self.context.get('action')
+        action = self.context.get('action')
         if action == 'list':
             represintation['replies'] = instance.replies.count()
         else:

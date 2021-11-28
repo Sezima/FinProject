@@ -1,17 +1,15 @@
 from django.core.mail import send_mail
 
-
-def send_activation_code(email, activation_code):
-    activation_url = f'http://localhost:8000/api/v1/account/activate/{activation_code}'
-    message = f"""
-    Thank you for signing up.
-    Please, activate your account.
-    Activation link: {activation_url}
-    """
+def send_welcome_email(email):
+    message = f'Thanks for registration in our site Online Hospital!'
     send_mail(
-        'Activate your account',
+        'Welcome to Online Hospital!',
         message,
-        'owner@gmail.com',
-        [email, ],
+        'admin@gmail.com',
+        [email],
         fail_silently=False
     )
+
+
+
+
