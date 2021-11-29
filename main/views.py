@@ -13,7 +13,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from .models import *
 from .serializers import CategorySerializer, ReplySerializer, CommentSerializer, ProblemSerializer, \
-    DepartmentSerializer, UserHistorySerializer
+    DepartmentSerializer, LikesSerializer, RatingSerializer, FavoriteSerializer
 from .permissions import IsDepartmentAuthor
 
 
@@ -110,15 +110,27 @@ class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+class PermissionMixin:
+    def get_permissions(self):
+        if self.action == 'create':
+            permissions = [IsAuthenticated, ]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permissions = [IsDepartmentAuthor, ]
+        else:
+            permissions = []
+        return [permission() for permission in permissions]
 
 
-class UserHistoryView(UpdateModelMixin, GenericViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = UserHistory.objects.all()
-    serializer_class = UserHistorySerializer
-    lookup_field = 'post'
+class LikesViewSet(PermissionMixin, viewsets.ModelViewSet):
+    queryset = Likes.objects.all()
+    serializer_class = LikesSerializer
 
-    # def get_object(self):
-    #     UserHistory.objects.get_or_create()
-    #     obj = UserHistory.objects.get_or_create(user=self.request.user, post_id=self.kwargs['post'])
-    #     return obj
+
+class FavoriteViewSet(PermissionMixin, viewsets.ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+
+
+class RatingViewSet(PermissionMixin, viewsets.ModelViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer

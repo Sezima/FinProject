@@ -132,13 +132,54 @@ class CommentSerializer(serializers.ModelSerializer):
         return comment
 
 
-class UserHistorySerializer(serializers.ModelSerializer):
+
+class LikesSerializer(serializers.ModelSerializer):
+
+    author = serializers.ReadOnlyField(source='author.email')
+
     class Meta:
-        model = UserHistory
-        fields = ('post', 'like', 'in_postmarks', 'rate')
+        model = Likes
+        fields = '__all__'
+
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        author = request.user
+        post = validated_data.get('post')
+        like = Likes.objects.get_or_create(author=author, post=post)[0]
+        like.likes = True if like.likes is False else False
+        like.save()
+        return like
+
+
+class RatingSerializer(serializers.ModelSerializer):
+
+    author = serializers.ReadOnlyField(source='author.email')
+
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        author = request.user
+        post = validated_data.get('post')
+        print(validated_data)
+        rating = Rating.objects.get_or_create(author=author, post=post)[0]
+        rating.rating = validated_data['rating']
+        rating.save()
+        return rating
+
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['like'] = instance.like
-        representation['rate'] = instance.rate
-
+        representation['user'] = instance.user.email
+        representation['post'] = instance.post.title
+        return representation

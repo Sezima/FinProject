@@ -17,21 +17,21 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
-
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from main.views import CategoryListView, DepartmentImageView, DepartmentsViewSet, ReplyViewSet, ProblemViewSet, \
-    CommentViewSet, UserHistoryView
+    CommentViewSet, LikesViewSet, RatingViewSet, FavoriteViewSet
 
 router = DefaultRouter()
 router.register('department', DepartmentsViewSet)
 router.register('problems', ProblemViewSet)
 router.register('replies', ReplyViewSet)
 router.register('comments', CommentViewSet)
-router.register('posts', UserHistoryView)
-
+router.register('likes', LikesViewSet)
+router.register('rating', RatingViewSet)
+router.register('favorite', FavoriteViewSet)
 
 schema_view = get_schema_view(
    openapi.Info(

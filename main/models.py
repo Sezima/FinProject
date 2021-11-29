@@ -62,21 +62,30 @@ class Comment(models.Model):
     class Meta:
         ordering = ('-created', )
 
-class UserHistory(models.Model):
-    RATE_CHOICES = (
-        (1, 'Bad'),
-        (2, 'Not well'),
-        (3, 'Norm'),
-        (4, 'Good'),
-        (5, 'Amazing')
-    )
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, null=True)
-    post = models.ForeignKey(Department, on_delete=models.CASCADE)
-    like = models.BooleanField(default=False)
-    in_postmarks = models.BooleanField(default=False)
-    rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES, null=True)
+
+class Likes(models.Model):
+    likes = models.BooleanField(default=False)
+    post = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='likes')
+    author = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='likes')
+
 
 
     def __str__(self):
-        return f'{self.user.email}: {self.post.title}, RATE {self.rate}'
+        return str(self.likes)
+
+
+class Rating(models.Model):
+    rating = models.IntegerField(default=0)
+    post = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='rating')
+    author = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='rating')
+
+    def __str__(self):
+        return str(self.rating)
+
+class Favorite(models.Model):
+    post = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='favourites')
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='favourites')
+    favorite = models.BooleanField(default=True)
+
+
 

@@ -17,7 +17,5 @@ admin.site.register(Problem)
 admin.site.register(Reply)
 admin.site.register(Comment)
 
-
-@admin.register(UserHistory)
-class UserHistoryAdmin(ModelAdmin):
-    ...
+admin.site.register(Likes)
+admin.site.register(Rating)
