@@ -153,9 +153,7 @@ class LikesSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-
     author = serializers.ReadOnlyField(source='author.email')
-
     class Meta:
         model = Rating
         fields = '__all__'
@@ -164,7 +162,6 @@ class RatingSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         author = request.user
         post = validated_data.get('post')
-        print(validated_data)
         rating = Rating.objects.get_or_create(author=author, post=post)[0]
         rating.rating = validated_data['rating']
         rating.save()

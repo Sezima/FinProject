@@ -42,8 +42,11 @@ INSTALLED_APPS = [
     'main',
     'rest_framework.authtoken',
     'drf_yasg',
+    'phonenumber_field',
+
 
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,7 +85,7 @@ WSGI_APPLICATION = 'first.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hospital_db',
+        'NAME': 'final_db',
         'USER': 'sezim',
         'PASSWORD': '1',
         'HOST': 'localhost',
@@ -142,7 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 3
+    'PAGE_SIZE': 5
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -152,5 +155,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'osmsezimka@gmail.com'
 EMAIL_HOST_PASSWORD = 'sezim0413'
-
 

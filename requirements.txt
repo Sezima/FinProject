@@ -6,3 +6,8 @@ python-decouple
 twilio
 djangorestframework-simplejwt
 drf-yasg
+django-phonenumber-field
+phonenumbers
+twilio
+celery==4.3
+redis

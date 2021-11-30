@@ -19,12 +19,13 @@ from .permissions import IsDepartmentAuthor
 
 
 class PaginationClass(PageNumberPagination):
-    page_size = 5
-    # def get_paginated_response(self, data):
-    #     for i in range(self.page_size):
-    #         text = data[i]['description']
-    #         data[i]['description'] = text[:55] + '...'
-    #     return super().get_paginated_response(data)
+    page_size = 1
+
+    def get_paginated_response(self, data):
+        for i in range(self.page_size):
+            text = data[i]['description']
+            data[i]['description'] = text[:55] + '...'
+        return super().get_paginated_response(data)
 
 
 
@@ -40,9 +41,6 @@ class DepartmentsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, ]
     pagination_class = PaginationClass
 
-class DepartmentImageView(generics.ListCreateAPIView):
-    queryset = DepartmentImage.objects.all()
-    serializer_class = DepartmentSerializer
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -51,18 +49,9 @@ class DepartmentImageView(generics.ListCreateAPIView):
         if self.action in ['update', 'partial_update', 'destroy']:
             permissions = [IsDepartmentAuthor, ]
         else:
-            permissions = []
+            permissions = [IsAuthenticated]
         return [permission() for permission in permissions]
 
-
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        weeks = int(self.request.query_params.get('days', 0))
-        if weeks > 0:
-            start_date = timezone.now() - timedelta(days=weeks)
-            queryset = queryset.filter(created_at__gte=start_date)
-            return queryset
 
     @action(detail=False, methods=['get'])
     def own(self, request, pk=None):
@@ -80,6 +69,21 @@ class DepartmentImageView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
+
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     weeks = int(self.request.query_params.get('days', 0))
+    #     if weeks > 0:
+    #         start_date = timezone.now() - timedelta(days=weeks)
+    #         queryset = queryset.filter(created_at__gte=start_date)
+    #         return queryset
+
+
+
+class DepartmentImageView(generics.ListCreateAPIView):
+    queryset = DepartmentImage.objects.all()
+    serializer_class = DepartmentSerializer
 
 
 class ProblemViewSet(ModelViewSet):
